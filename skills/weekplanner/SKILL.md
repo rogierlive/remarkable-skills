@@ -1,25 +1,31 @@
 ---
 name: weekplanner
-description: Maakt een simpele weekplanner-PDF voor de reMarkable, met een weekoverzicht en een pagina per dag met je agenda per uur, plus 3 weekdoelen. De agenda komt uit een Google Agenda (geheim iCal-adres) of een .ics-bestand. Gebruik bij "maak mijn weekplanner", "weekplanner voor volgende week", "zet mijn week op de reMarkable".
+description: Maakt een weekplanner-PDF voor de reMarkable (14 pagina's): voorpagina, weekoverzicht, per dag een dagpagina met agenda per uur en een notitiepagina, plus weekreview en weekend, met 3 weekdoelen. De agenda komt uit een Google Agenda (geheim iCal-adres) of een .ics-bestand. Gebruik bij "maak mijn weekplanner", "weekplanner voor volgende week", "zet mijn week op de reMarkable".
 ---
 
 # Weekplanner voor je reMarkable
 
-Een planner in 4:3 formaat (zoals het reMarkable-scherm). Acht pagina's:
+Een planner in 4:3 formaat (zoals het reMarkable-scherm). Veertien pagina's:
 
-1. **Weekoverzicht**: weeknummer, je 3 weekdoelen met afvinkvakjes en alle dagen met hun afspraken.
-2. **Zeven dagpagina's** (maandag t/m zondag): bovenaan de weekdoelen, daaronder je agenda per uur van 07:00 tot 22:00. Afspraken die overlappen staan naast elkaar.
+1. **Voorpagina**: rustige cover met weeknummer, datums en (optioneel) je naam. Wil je een eigen afbeelding? Zet `WEEKPLANNER_COVER=/pad/naar/foto.jpg` of geef `--cover-image` mee.
+2. **Weekoverzicht**: je 3 weekdoelen met afvinkrondjes en alle dagen met hun afspraken.
+3. **Maandag t/m vrijdag, twee pagina's per dag**:
+   - *Dagpagina*: links je agenda per uur (05:00-23:00) met een kader om de werkdag (05:00-17:00) voor timeboxing, rechts je weekdoelen, drie prioriteiten met afvinkvakje en -rondjes, en schrijflijnen.
+   - *Notitiepagina*: ruimte voor wins en vrije notities.
+4. **Weekreview**: drie vragen met schrijfruimte.
+5. **Weekend**: een open notitiepagina voor zaterdag en zondag.
 
 ## Wat het wel doet
 
 - Leest een Google Agenda via het geheime iCal-adres, of een `.ics`-bestand.
 - Snapt terugkerende afspraken en hele-dag-afspraken.
 - Toont 3 weekdoelen op de weekpagina en op elke dagpagina.
+- Heeft een eigen rustige cover, of jouw afbeelding.
 - Haalt emoji uit titels weg, zodat er geen lege vakjes in de PDF komen.
 
 ## Wat het niet doet (bewust simpel)
 
-Geen quotes, geen klantenteller of andere cijfers, geen eigen covers, geen automatische taak elke vrijdag. Zie "Extra opties".
+Geen quotes, geen klantenteller of jaardoel-bolletjes, geen koppeling met taken- of CRM-systemen, geen automatische taak elke vrijdag. Zie "Extra opties".
 
 ## Zo gebruik je het
 

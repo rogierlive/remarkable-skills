@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Simpele weekplanner voor je reMarkable (4:3 formaat, PDF).
+"""Weekplanner voor je reMarkable (4:3 formaat, PDF, 14 paginas).
 
-Bevat een weekoverzicht en een pagina per dag met je agenda per uur.
-Bovenaan elke pagina staan je weekdoelen.
+Opbouw: voorpagina, weekoverzicht, dan per werkdag een dagpagina (agenda per uur
+met een kader om de werkdag, je weekdoelen en drie prioriteiten) met een
+notitiepagina erachter, en tot slot een weekreview en een weekendpagina.
 
 Voorbeelden:
   python3 weekplanner.py --ics ../../examples/demo-agenda.ics --doelen "Offerte sturen|Twee keer sporten|Tuin opruimen"
+  python3 weekplanner.py --cover-image mijn-foto.jpg --ics agenda.ics
   python3 weekplanner.py --ical-url "https://calendar.google.com/.../basic.ics"
   python3 weekplanner.py            # leest alles uit ~/.remarkable-skills.env
 """
@@ -16,17 +18,24 @@ from zoneinfo import ZoneInfo
 
 try:
     from reportlab.pdfgen import canvas
-    from reportlab.lib.colors import HexColor
+    from reportlab.lib.colors import HexColor, Color
+    from reportlab.lib.utils import ImageReader
 except ImportError:
     sys.exit("reportlab ontbreekt. Zie de README, stap 3 (venv).")
 
 PAGE_W, PAGE_H = 595.276, 793.7          # 4:3, zoals het reMarkable-scherm
 MARGE = 40
+L1, L2 = 39.685, 291.969                  # linkerkolom (agenda)
+R1, R2 = 314.646, 566.929                 # rechterkolom (doelen, prioriteiten)
 DAGEN = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"]
 MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus",
            "september", "oktober", "november", "december"]
-INK, GRIJS, LICHT = HexColor("#000000"), HexColor("#666666"), HexColor("#BBBBBB")
-UUR_START, UUR_EIND = 7, 22               # raster van 07:00 tot 22:00
+INK, GRIJS, LICHT = HexColor("#1a1a1a"), HexColor("#666666"), HexColor("#aaaaaa")
+ZEER_LICHT, GROEN = HexColor("#dddddd"), HexColor("#799a7c")
+WIT = HexColor("#ffffff")
+UUR_START, UUR_EIND = 5, 23               # raster van 05:00 tot 23:00
+KADER_START, KADER_EIND = 5, 17           # kader voor timeboxing (de werkdag)
+BAND = 28.27                              # lijnafstand voor schrijfruimte
 
 _EMOJI = re.compile("[\U0001F000-\U0001FAFF\U00002600-\U000027BF\U00002300-\U000023FF"
                     "\U00002B00-\U00002BFF\U0000FE00-\U0000FE0F\U0000200D]+")
@@ -40,7 +49,8 @@ def schoon(t):
 
 
 BEKENDE_KEYS = {"REMARKABLE_NAAM", "REMARKABLE_MAP", "REMARKABLE_BROWSER", "REMARKABLE_PYTHON",
-                "WEEKPLANNER_ICAL_URL", "WEEKPLANNER_DOELEN", "WEEKPLANNER_MAP", "WEEKPLANNER_TZ"}
+                "WEEKPLANNER_ICAL_URL", "WEEKPLANNER_DOELEN", "WEEKPLANNER_MAP", "WEEKPLANNER_TZ",
+                "WEEKPLANNER_COVER"}
 
 
 def laad_env():
@@ -108,141 +118,229 @@ def kort(c, tekst, font, maat, breedte):
     return tekst.rstrip() + "..."
 
 
-def doelen_blok(c, y, doelen, titel="Weekdoelen", klein=False):
-    """Tekent de weekdoelen met afvinkvakjes. Geeft de nieuwe y terug."""
-    c.setFillColor(INK); c.setFont("Helvetica-Bold", 9 if klein else 11)
-    c.drawString(MARGE, y, titel.upper())
-    y -= 6 if klein else 8
-    c.setStrokeColor(INK); c.setLineWidth(0.8); c.line(MARGE, y, PAGE_W - MARGE, y)
-    y -= 4 if klein else 6
-    rij = 17 if klein else 26
+def gespatieerd(c, tekst, x, y, font, maat, em=0.25):
+    """Tekst met extra letterafstand. Geeft de breedte terug."""
+    c.setFont(font, maat)
+    extra, cx = maat * em, x
+    for ch in tekst:
+        c.drawString(cx, y, ch)
+        cx += c.stringWidth(ch, font, maat) + extra
+    return cx - x - extra
+
+
+def midden(c, tekst, y, font, maat, em=0.0):
+    c.setFont(font, maat)
+    w = sum(c.stringWidth(ch, font, maat) + maat * em for ch in tekst) - maat * em
+    gespatieerd(c, tekst, (PAGE_W - w) / 2, y, font, maat, em)
+
+
+def lijn(c, x1, y, x2, kleur=INK, dik=0.75):
+    c.setStrokeColor(kleur); c.setLineWidth(dik); c.line(x1, y, x2, y)
+
+
+def schrijflijnen(c, x1, x2, y_top, y_bodem, kleur=LICHT, band=BAND, dik=0.5):
+    """Vult het vlak met schrijflijnen. Geeft de y van de laatste lijn terug."""
+    y = y_top - band
+    while y >= y_bodem - 1:
+        lijn(c, x1, y, x2, kleur, dik)
+        y -= band
+    return y + band
+
+
+def titel(c, tekst):
+    """Paginakop: gecentreerd, met groene lijn eronder."""
+    c.setFillColor(INK); midden(c, tekst, PAGE_H - 46, "Courier-Bold", 11)
+    lijn(c, MARGE, PAGE_H - 55, PAGE_W - MARGE, GROEN, 1.0)
+
+
+def kopje(c, x1, x2, y, tekst, groen=False):
+    c.setFillColor(INK); c.setFont("Courier-Bold", 9); c.drawString(x1, y, tekst)
+    lijn(c, x1, y - 8, x2, GROEN if groen else INK, 0.75)
+
+
+def spoor(c, y, x2=R2):
+    """Voortgangsspoor: vakje, zes afvinkrondjes, vakje (rechts uitgelijnd)."""
+    box, r, stap = 11, 5.5, 18
+    x0 = x2 - (7 * stap + box)
+    c.setStrokeColor(GROEN); c.setFillColor(WIT); c.setLineWidth(0.9)
+    c.rect(x0, y, box, box, fill=1, stroke=1)
+    for i in range(6):
+        c.circle(x0 + box + stap / 2 + i * stap, y + box / 2, r, fill=1, stroke=1)
+    c.rect(x2 - box, y, box, box, fill=1, stroke=1)
+
+
+def doelen_lijst(c, x1, x2, y, doelen, maat=9.5, rij=22):
+    """Drie weekdoelen met een afvinkrondje. Geeft de y onder het blok terug."""
     for i in range(3):
-        y -= rij - (2 if klein else 4)
+        y -= rij
+        c.setStrokeColor(GROEN); c.setFillColor(WIT); c.setLineWidth(0.9)
+        c.circle(x1 + 5, y + 3, 5, fill=1, stroke=1)
         t = schoon(doelen[i]) if i < len(doelen) else ""
-        c.setStrokeColor(INK); c.setLineWidth(0.8)
-        c.rect(MARGE, y - 1, 9 if klein else 12, 9 if klein else 12, stroke=1, fill=0)
-        c.setFont("Helvetica", 10 if klein else 13); c.setFillColor(INK)
         if t:
-            c.drawString(MARGE + (16 if klein else 20), y, kort(c, t, "Helvetica", 10 if klein else 13, PAGE_W - 2 * MARGE - 24))
+            c.setFillColor(INK); c.setFont("Helvetica", maat)
+            c.drawString(x1 + 17, y, kort(c, t, "Helvetica", maat, x2 - x1 - 17))
         else:
-            c.setStrokeColor(LICHT); c.setLineWidth(0.5)
-            c.line(MARGE + 20, y - 2, PAGE_W - MARGE, y - 2)
-        y -= 4 if not klein else 0
-    return y - (6 if klein else 4)
+            lijn(c, x1 + 17, y - 2, x2, LICHT, 0.5)
+    return y - 8
 
 
-def weekpagina(c, maandag, agenda, doelen, naam):
+def voorpagina(c, maandag, naam, cover):
     weeknr = maandag.isocalendar()[1]
     zondag = maandag + timedelta(days=6)
-    y = PAGE_H - MARGE - 6
-    c.setFillColor(GRIJS); c.setFont("Helvetica", 10)
-    c.drawString(MARGE, y, (f"WEEKPLANNER VOOR {schoon(naam).upper()}" if naam else "WEEKPLANNER"))
-    y -= 36
-    c.setFillColor(INK); c.setFont("Helvetica-Bold", 34)
-    c.drawString(MARGE, y, f"Week {weeknr}")
-    c.setFont("Helvetica", 12); c.setFillColor(GRIJS)
-    c.drawRightString(PAGE_W - MARGE, y + 4,
-                      f"{maandag.day} {MAANDEN[maandag.month-1]} - {zondag.day} {MAANDEN[zondag.month-1]} {zondag.year}")
-    y -= 34
-    y = doelen_blok(c, y, doelen, "Weekdoelen")
-    y -= 14
-    # Overzicht per dag
-    c.setFillColor(INK); c.setFont("Helvetica-Bold", 11)
-    c.drawString(MARGE, y, "DEZE WEEK"); y -= 8
-    c.setStrokeColor(INK); c.setLineWidth(0.8); c.line(MARGE, y, PAGE_W - MARGE, y)
-    onder = MARGE + 10
-    hoogte = (y - onder) / 7
+    foto = False
+    if cover and Path(cover).is_file():
+        try:
+            img = ImageReader(str(cover))
+            iw, ih = img.getSize()
+            s = max(PAGE_W / iw, PAGE_H / ih)
+            c.drawImage(img, (PAGE_W - iw * s) / 2, (PAGE_H - ih * s) / 2, iw * s, ih * s, mask="auto")
+            foto = True
+        except Exception:
+            print("Let op: je coverafbeelding kon niet worden gelezen. Er komt een rustige cover.", file=sys.stderr)
+    if foto:
+        stappen, hoogte = 60, 260
+        for i in range(stappen):
+            c.setFillColor(Color(0, 0, 0, alpha=(i / stappen) ** 1.4 * 0.62))
+            c.rect(0, hoogte * (1 - i / stappen) - hoogte / stappen, PAGE_W, hoogte / stappen + 0.6, fill=1, stroke=0)
+        kleur, sub = WIT, WIT
+        y_week, y_nr, y_lijn, y_dat, y_naam = 190, 112, 90, 52, 30
+    else:
+        c.setFillColor(HexColor("#fafaf7")); c.rect(0, 0, PAGE_W, PAGE_H, fill=1, stroke=0)
+        c.setStrokeColor(GROEN); c.setLineWidth(1.0)
+        c.rect(MARGE, MARGE, PAGE_W - 2 * MARGE, PAGE_H - 2 * MARGE, fill=0, stroke=1)
+        c.rect(MARGE + 6, MARGE + 6, PAGE_W - 2 * MARGE - 12, PAGE_H - 2 * MARGE - 12, fill=0, stroke=1)
+        kleur, sub = INK, GRIJS
+        y_week, y_nr, y_lijn, y_dat, y_naam = 470, 380, 350, 315, 280
+    c.setFillColor(kleur); midden(c, "WEEK", y_week, "Courier-Bold", 10, 0.5)
+    c.setFillColor(kleur); midden(c, str(weeknr), y_nr, "Courier-Bold", 56)
+    cx = PAGE_W / 2
+    lijn(c, cx - 57, y_lijn, cx + 57, GROEN, 1.5)
+    c.setFillColor(kleur)
+    midden(c, f"{maandag.day} {MAANDEN[maandag.month-1]} - {zondag.day} {MAANDEN[zondag.month-1]} {zondag.year}",
+           y_dat, "Courier", 13, 0.1)
+    if naam:
+        c.setFillColor(sub); midden(c, schoon(naam).upper(), y_naam, "Courier", 9, 0.3)
+    c.showPage()
+
+
+def weekpagina(c, maandag, agenda, doelen):
+    weeknr = maandag.isocalendar()[1]
+    zondag = maandag + timedelta(days=6)
+    titel(c, f"WEEK {weeknr} - {maandag.day} {MAANDEN[maandag.month-1].upper()} T/M "
+             f"{zondag.day} {MAANDEN[zondag.month-1].upper()}")
+    y = PAGE_H - 84
+    kopje(c, MARGE, PAGE_W - MARGE, y, "WEEKDOELEN", groen=True)
+    y = doelen_lijst(c, MARGE, PAGE_W - MARGE, y - 8, doelen, maat=11, rij=26)
+    y -= 26
+    kopje(c, MARGE, PAGE_W - MARGE, y, "DEZE WEEK")
+    top0, onder = y - 8, MARGE + 8
+    hoogte = (top0 - onder) / 7
     for i in range(7):
         d = maandag + timedelta(days=i)
-        top = y - i * hoogte
-        c.setStrokeColor(LICHT); c.setLineWidth(0.5); c.line(MARGE, top - hoogte, PAGE_W - MARGE, top - hoogte)
-        c.setFillColor(INK); c.setFont("Helvetica-Bold", 11)
-        c.drawString(MARGE, top - 15, DAGEN[i])
-        c.setFont("Helvetica", 9); c.setFillColor(GRIJS)
+        top = top0 - i * hoogte
+        lijn(c, MARGE, top - hoogte, PAGE_W - MARGE, LICHT, 0.5)
+        c.setFillColor(INK); c.setFont("Courier-Bold", 9.5); c.drawString(MARGE, top - 15, DAGEN[i].upper())
+        c.setFont("Courier", 8); c.setFillColor(GRIJS)
         c.drawString(MARGE, top - 27, f"{d.day} {MAANDEN[d.month-1]}")
-        regels = [("", t) for t in agenda.get(d, {}).get("hele_dag", [])]
-        regels += [(s.strftime("%H:%M"), t) for s, _, t in agenda.get(d, {}).get("afspraken", [])]
+        dag = agenda.get(d, {})
+        regels = [("", t) for t in dag.get("hele_dag", [])]
+        regels += [(s.strftime("%H:%M"), t) for s, _, t in dag.get("afspraken", [])]
         maxr = max(1, int((hoogte - 6) // 12))
-        c.setFillColor(INK); c.setFont("Helvetica", 9)
-        for j, (tijd, titel) in enumerate(regels[:maxr]):
+        for j, (tijd, tekst) in enumerate(regels[:maxr]):
+            yy = top - 14 - j * 12
             if j == maxr - 1 and len(regels) > maxr:
-                c.setFillColor(GRIJS); c.drawString(MARGE + 90, top - 14 - j * 12, f"+ {len(regels) - maxr + 1} meer")
+                c.setFillColor(GRIJS); c.setFont("Helvetica", 9)
+                c.drawString(MARGE + 100, yy, f"+ {len(regels) - maxr + 1} meer")
                 break
-            c.setFillColor(GRIJS); c.drawString(MARGE + 90, top - 14 - j * 12, tijd)
+            c.setFillColor(GRIJS); c.setFont("Helvetica", 9); c.drawString(MARGE + 100, yy, tijd)
             c.setFillColor(INK)
-            c.drawString(MARGE + 125, top - 14 - j * 12, kort(c, titel, "Helvetica", 9, PAGE_W - 2 * MARGE - 125))
+            c.drawString(MARGE + 135, yy, kort(c, tekst, "Helvetica", 9, PAGE_W - 2 * MARGE - 135))
     c.showPage()
 
 
 def dagpagina(c, d, agenda, doelen):
     dag = agenda.get(d, {"hele_dag": [], "afspraken": []})
-    y = PAGE_H - MARGE - 6
-    c.setFillColor(INK); c.setFont("Helvetica-Bold", 30)
-    c.drawString(MARGE, y - 24, DAGEN[d.weekday()])
-    c.setFont("Helvetica", 12); c.setFillColor(GRIJS)
-    c.drawRightString(PAGE_W - MARGE, y - 20, f"{d.day} {MAANDEN[d.month-1]} {d.year}")
-    y -= 40
-    y = doelen_blok(c, y, doelen, "Weekdoelen", klein=True)
-    # Hele-dag-strook
+    titel(c, f"{DAGEN[d.weekday()].upper()} - {d.day} {MAANDEN[d.month-1].upper()}")
+    y_hd = PAGE_H - 70
     if dag["hele_dag"]:
-        c.setFont("Helvetica", 9); c.setFillColor(INK)
-        c.drawString(MARGE, y - 6, kort(c, "Hele dag: " + ", ".join(dag["hele_dag"]), "Helvetica", 9, PAGE_W - 2 * MARGE))
-        y -= 14
-    # Uurraster
-    boven = y - 6
-    onder = MARGE + 8
+        c.setFillColor(INK); c.setFont("Helvetica", 9)
+        c.drawString(L1, y_hd, kort(c, "Hele dag: " + ", ".join(dag["hele_dag"]), "Helvetica", 9, PAGE_W - 2 * MARGE))
+    boven = PAGE_H - 84                      # bovenkant van het uurraster
+    onder = 54
     uren = UUR_EIND - UUR_START
-    uurh = (boven - onder) / uren
-    x0, x1 = MARGE + 38, PAGE_W - MARGE
-    for i in range(uren + 1):
-        yy = boven - i * uurh
-        c.setStrokeColor(LICHT if i else INK); c.setLineWidth(0.5 if i else 0.8)
-        c.line(x0, yy, x1, yy)
-        if i < uren:
-            c.setFillColor(GRIJS); c.setFont("Helvetica", 9)
-            c.drawString(MARGE, yy - 10, f"{UUR_START + i:02d}:00")
-            c.setStrokeColor(HexColor("#E3E3E3")); c.setLineWidth(0.3)
-            c.line(x0, yy - uurh / 2, x1, yy - uurh / 2)
-    c.setStrokeColor(LICHT); c.setLineWidth(0.5); c.line(x0, boven, x0, onder - 0)
-    # Afspraken: overlappende naast elkaar
-    items = []
+    rij = (boven - onder) / uren
+    per_uur = {}
     for s, e, t in dag["afspraken"]:
-        sm = max(s.hour + s.minute / 60, UUR_START)
-        em = min(e.hour + e.minute / 60 if e.date() == d else UUR_EIND, UUR_EIND)
-        if em > sm:
-            items.append([sm, em, t, s.strftime("%H:%M"), 0, 1])
-    groep = []
-    for it in items:                               # simpele kolomverdeling per overlap-groep
-        if groep and it[0] >= max(g[1] for g in groep):
-            _verdeel(groep); groep = []
-        groep.append(it)
-    _verdeel(groep)
-    for sm, em, t, tijd, kol, n in items:
-        w = (x1 - x0 - 4) / n
-        xx = x0 + 2 + kol * w
-        top, hoog = boven - (sm - UUR_START) * uurh, (em - sm) * uurh
-        c.setFillColor(HexColor("#EDEDED")); c.setStrokeColor(INK); c.setLineWidth(0.8)
-        c.rect(xx, top - hoog + 1, w - 3, hoog - 2, stroke=1, fill=1)
-        c.setFillColor(INK)
-        if hoog >= 26:
-            c.setFont("Helvetica-Bold", 9); c.drawString(xx + 5, top - 12, kort(c, t, "Helvetica-Bold", 9, w - 14))
-            c.setFont("Helvetica", 8); c.setFillColor(GRIJS); c.drawString(xx + 5, top - 22, tijd)
-        else:
-            c.setFont("Helvetica-Bold", 8.5)
-            c.drawString(xx + 5, top - hoog / 2 - 3, kort(c, f"{tijd} {t}", "Helvetica-Bold", 8.5, w - 14))
+        h = max(UUR_START, min(UUR_EIND - 1, s.hour))
+        eind = f"-{e.strftime('%H:%M')}" if e.date() == s.date() else ""
+        per_uur.setdefault(h, []).append((s.strftime("%H:%M") + eind, t))
+    for i in range(uren):
+        uur = UUR_START + i
+        top = boven - i * rij
+        c.setFillColor(GRIJS); c.setFont("Courier", 7.5); c.drawString(L1 + 3, top - 8, f"{uur:02d}:00")
+        lijn(c, L1, top - 10, L2, LICHT, 0.5)
+        ev = per_uur.get(uur, [])
+        maxr = max(1, int((rij - 12) // 11) + 1)
+        for j, (tijd, t) in enumerate(ev[:maxr]):
+            yy = top - 6.5 - j * 11
+            if j == maxr - 1 and len(ev) > maxr:
+                c.setFillColor(GRIJS); c.setFont("Helvetica", 9); c.drawString(L1 + 46, yy, f"+ {len(ev) - maxr + 1} meer")
+                break
+            c.setFillColor(INK); c.setFont("Helvetica", 9)
+            c.drawString(L1 + 46, yy, kort(c, f"{tijd} {t}", "Helvetica", 9, L2 - L1 - 50))
+    # Kader om de werkdag (timeboxing): van de 05:00-lijn tot de 17:00-lijn.
+    k_top = boven - (KADER_START - UUR_START) * rij - 10
+    k_bot = boven - (KADER_EIND - UUR_START) * rij - 10
+    c.setStrokeColor(INK); c.setLineWidth(1.5)
+    c.rect(L1, k_bot, L2 - L1, k_top - k_bot, fill=0, stroke=1)
+
+    # Rechterkolom: weekdoelen, drie prioriteiten met voortgangsspoor, schrijflijnen.
+    y = boven - 2
+    kopje(c, R1, R2, y, "WEEKDOELEN", groen=True)
+    y = doelen_lijst(c, R1, R2, y - 8, doelen, maat=9.5, rij=21)
+    y -= 20
+    kopje(c, R1, R2, y, "VANDAAG")
+    y -= 14
+    for n in (1, 2, 3):
+        y1, y2 = y - 22, y - 22 - 26
+        c.setFillColor(HexColor("#888888")); c.setFont("Courier", 7.5); c.drawString(R1, y1 + 2, str(n))
+        nb = c.stringWidth(str(n), "Courier", 7.5) + R1 + 4
+        lijn(c, nb, y1, R2, HexColor("#888888"), 0.75)
+        lijn(c, R1, y2, R2, HexColor("#888888"), 0.75)
+        spoor(c, y2 - 3 - 11)
+        y = y2 - 3 - 11 - 6
+    y -= 6
+    schrijflijnen(c, R1, R2, y, onder, ZEER_LICHT, 20)
     c.showPage()
 
 
-def _verdeel(groep):
-    kolommen = []
-    for it in groep:
-        for k, laatste in enumerate(kolommen):
-            if it[0] >= laatste:
-                kolommen[k] = it[1]; it[4] = k; break
-        else:
-            kolommen.append(it[1]); it[4] = len(kolommen) - 1
-    for it in groep:
-        it[5] = max(1, len(kolommen))
+def notitiepagina(c, d):
+    titel(c, f"NOTITIES - {DAGEN[d.weekday()].upper()} {d.day} {MAANDEN[d.month-1].upper()}")
+    y = PAGE_H - 84
+    kopje(c, MARGE, PAGE_W - MARGE, y, "WINS", groen=True)
+    y = schrijflijnen(c, MARGE, PAGE_W - MARGE, y - 8, y - 8 - 4 * BAND)
+    y -= 26
+    kopje(c, MARGE, PAGE_W - MARGE, y, "NOTITIES")
+    schrijflijnen(c, MARGE, PAGE_W - MARGE, y - 8, 24)
+    c.showPage()
+
+
+def reviewpagina(c, maandag):
+    titel(c, f"WEEKREVIEW - WEEK {maandag.isocalendar()[1]}")
+    y = PAGE_H - 84
+    for kop in ("WAT GING GOED", "WAT LEERDE IK", "WAT NEEM IK MEE NAAR VOLGENDE WEEK"):
+        kopje(c, MARGE, PAGE_W - MARGE, y, kop, groen=True)
+        y = schrijflijnen(c, MARGE, PAGE_W - MARGE, y - 8, y - 8 - 6 * BAND)
+        y -= 30
+    schrijflijnen(c, MARGE, PAGE_W - MARGE, y + 20, 24)
+    c.showPage()
+
+
+def weekendpagina(c, maandag):
+    za, zo = maandag + timedelta(days=5), maandag + timedelta(days=6)
+    titel(c, f"WEEKEND - {za.day} {MAANDEN[za.month-1].upper()} / {zo.day} {MAANDEN[zo.month-1].upper()}")
+    schrijflijnen(c, MARGE, PAGE_W - MARGE, PAGE_H - 62, 24)
+    c.showPage()
 
 
 def standaard_maandag(vandaag):
@@ -259,6 +357,8 @@ def main():
     ap.add_argument("--ical-url", default=os.environ.get("WEEKPLANNER_ICAL_URL", ""), help="Geheim iCal-adres van je Google Agenda")
     ap.add_argument("--doelen", default=os.environ.get("WEEKPLANNER_DOELEN", ""), help='3 weekdoelen, gescheiden door |')
     ap.add_argument("--naam", default=os.environ.get("REMARKABLE_NAAM", ""))
+    ap.add_argument("--cover-image", default=os.environ.get("WEEKPLANNER_COVER", ""),
+                    help="Eigen afbeelding voor de voorpagina (optioneel)")
     ap.add_argument("--tz", default=os.environ.get("WEEKPLANNER_TZ", "Europe/Amsterdam"))
     ap.add_argument("--output", "-o", help="Pad van de PDF")
     a = ap.parse_args()
@@ -282,11 +382,16 @@ def main():
     uit.parent.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(uit), pagesize=(PAGE_W, PAGE_H))
     c.setTitle(f"Weekplanner week {maandag.isocalendar()[1]}")
-    weekpagina(c, maandag, agenda, doelen, a.naam)
-    for i in range(7):
-        dagpagina(c, maandag + timedelta(days=i), agenda, doelen)
+    voorpagina(c, maandag, a.naam, a.cover_image)
+    weekpagina(c, maandag, agenda, doelen)
+    for i in range(5):
+        d = maandag + timedelta(days=i)
+        dagpagina(c, d, agenda, doelen)
+        notitiepagina(c, d)
+    reviewpagina(c, maandag)
+    weekendpagina(c, maandag)
     c.save()
-    print(f"Klaar: {uit} (8 paginas, week {maandag.isocalendar()[1]})")
+    print(f"Klaar: {uit} (14 paginas, week {maandag.isocalendar()[1]})")
 
 
 if __name__ == "__main__":

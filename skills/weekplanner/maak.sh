@@ -5,7 +5,7 @@
 set -euo pipefail
 HIER="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck disable=SC1091
-. "$HIER/../remarkable-leesgids/assets/laadenv.sh"
+. "$HIER/../remarkable-briefing/assets/laadenv.sh"
 STUREN=0; [ "${1:-}" = "--sturen" ] && { STUREN=1; shift; }
 
 # Geeft de gebruiker zelf een uitvoerpad (-o, --output of --output=...)? Dan gebruiken we dat.

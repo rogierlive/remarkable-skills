@@ -1,13 +1,13 @@
 ---
 name: nieuwsbrief-naar-remarkable
-description: Zet een nieuwsbrief of artikel (URL, geplakte tekst of HTML-bestand) om naar een leesgids-PDF en stuurt die naar de reMarkable. Gebruik bij "zet deze nieuwsbrief op mijn reMarkable", "maak een leesgids van deze link", "ik wil dit artikel op mijn reMarkable lezen".
+description: Zet een nieuwsbrief of artikel (URL, geplakte tekst of HTML-bestand) om naar een briefing-PDF en stuurt die naar de reMarkable. Gebruik bij "zet deze nieuwsbrief op mijn reMarkable", "maak een briefing van deze link", "ik wil dit artikel op mijn reMarkable lezen".
 ---
 
 # Nieuwsbrief of artikel naar je reMarkable
 
-Je geeft een link, een stuk tekst of een HTML-bestand. De skill maakt er een leesgids van in de vaste stijl en kan hem naar je reMarkable sturen.
+Je geeft een link, een stuk tekst of een HTML-bestand. De skill maakt er een briefing van in de vaste stijl en kan hem naar je reMarkable sturen.
 
-Deze skill gebruikt de skills `remarkable-leesgids` en `remarkable-sturen`. Zet alle drie in dezelfde map.
+Deze skill gebruikt de skills `remarkable-briefing` en `remarkable-sturen`. Zet alle drie in dezelfde map.
 
 ## Zo gebruik je het
 
@@ -33,12 +33,12 @@ Geef je geen uitvoerpad mee, dan komt de PDF in de map `uitvoer/` van de huidige
 
 - `artikel_naar_md.py` haalt de tekst op en zoekt de kern (`article`, `main` of de hele pagina). Menu's, scripts en voetteksten gaan eruit.
 - Koppen worden hoofdstukken. Zonder koppen wordt het een hoofdstuk.
-- De cover toont "Leesgids voor {naam}" (uit `REMARKABLE_NAAM`), de bron, de datum en de leestijd.
-- `remarkable-leesgids` bouwt de PDF. `remarkable-sturen` zet hem in je reMarkable Cloud.
+- De cover toont "Briefing voor {naam}" (uit `REMARKABLE_NAAM`), de bron, de datum en de leestijd.
+- `remarkable-briefing` bouwt de PDF. `remarkable-sturen` zet hem in je reMarkable Cloud.
 
 ## Let op
 
-- Afbeeldingen worden niet meegenomen. Het is een leesgids, geen kopie van de pagina.
+- Afbeeldingen worden niet meegenomen. Het is een briefing, geen kopie van de pagina.
 - Alle tekst van de pagina wordt platte tekst. Scripts, iframes en links van de pagina komen er niet in, en de PDF wordt gemaakt zonder JavaScript.
 - Sites met een inlog of betaalmuur geven vaak geen tekst. Sla dan de pagina op als HTML-bestand en geef dat bestand, of plak de tekst.
 - Controleer bij een nieuwsbrief met veel opmaak even de PDF voordat je hem stuurt.

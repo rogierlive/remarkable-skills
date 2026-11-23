@@ -1,12 +1,12 @@
 #!/bin/bash
 # Gebruik: bash tests/test_veiligheid.sh
-# Bewijst dat een kwaadaardige webpagina niets kan uitvoeren of insluiten in je leesgids.
+# Bewijst dat een kwaadaardige webpagina niets kan uitvoeren of insluiten in je briefing.
 # Toets 1: tekst van een pagina wordt platte tekst (geen script, iframe, afbeelding of link).
 # Toets 2: zelfs als er toch een script in de HTML komt, voert de browser het niet uit.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck disable=SC1091
-. "$ROOT/skills/remarkable-leesgids/assets/laadenv.sh"
+. "$ROOT/skills/remarkable-briefing/assets/laadenv.sh"
 PY="${REMARKABLE_PYTHON:-python3}"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 FOUT=0
@@ -33,11 +33,11 @@ cat > "$TMP/pagina.html" <<HTML
 HTML
 
 "$PY" "$ROOT/skills/nieuwsbrief-naar-remarkable/artikel_naar_md.py" "$TMP/pagina.html" "$TMP/gids.md" >/dev/null
-REMARKABLE_NAAM=Test "$PY" -I "$ROOT/skills/remarkable-leesgids/assets/build.py" "$TMP/gids.md" "$TMP/gids.html" ""
+REMARKABLE_NAAM=Test "$PY" -I "$ROOT/skills/remarkable-briefing/assets/build.py" "$TMP/gids.md" "$TMP/gids.html" ""
 for verboden in '<script' '<iframe' '<img' '<a ' '<[a-z][^>]* on[a-z]+='; do
   if grep -qiE -- "$verboden" "$TMP/gids.html"; then mis "HTML bevat $verboden"; else zeg "ok: geen $verboden in de HTML"; fi
 done
-bash "$ROOT/skills/remarkable-leesgids/assets/render.sh" "$TMP/gids.md" "$TMP/gids.pdf" >/dev/null
+bash "$ROOT/skills/remarkable-briefing/assets/render.sh" "$TMP/gids.md" "$TMP/gids.pdf" >/dev/null
 TEKST="$(pdftotext "$TMP/gids.pdf" -)"
 for verboden in UITGEVOERD ONERROR-UIT ECHTE-IMG IFRAMEINHOUD; do
   if grep -q "$verboden" <<<"$TEKST"; then mis "PDF bevat $verboden"; else zeg "ok: $verboden komt niet in de PDF"; fi
@@ -59,7 +59,7 @@ titel: Ruw
 
 <img src="x" onerror="document.body.append(['IMG','LIEP'].join(''))">
 MD
-bash "$ROOT/skills/remarkable-leesgids/assets/render.sh" "$TMP/ruw.md" "$TMP/ruw.pdf" >/dev/null
+bash "$ROOT/skills/remarkable-briefing/assets/render.sh" "$TMP/ruw.md" "$TMP/ruw.pdf" >/dev/null
 TEKST="$(pdftotext "$TMP/ruw.pdf" -)"
 for verboden in SCRIPTLIEP IMGLIEP; do
   if grep -q "$verboden" <<<"$TEKST"; then mis "JavaScript liep in de browser ($verboden)"; else zeg "ok: JavaScript uit ($verboden niet gevonden)"; fi

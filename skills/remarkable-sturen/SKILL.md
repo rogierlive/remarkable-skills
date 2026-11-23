@@ -33,4 +33,4 @@ bash <pad-naar-skill>/sturen.sh --dry-run "/pad/naar/bestand.pdf"
 - Stuur nooit iets naar de reMarkable zonder dat de gebruiker erom vroeg.
 - Bestaat een bestand met dezelfde naam al? Dan wordt het overschreven. Zeg dat erbij als je het weet.
 - Komt er een fout over inloggen? Laat de gebruiker `rmapi` eenmalig in de terminal draaien en een nieuwe code van my.remarkable.com invullen.
-- Wil je eerst een mooie leesbare PDF maken van tekst? Gebruik dan de skill `remarkable-leesgids`.
+- Wil je eerst een mooie leesbare PDF maken van tekst? Gebruik dan de skill `remarkable-briefing`.

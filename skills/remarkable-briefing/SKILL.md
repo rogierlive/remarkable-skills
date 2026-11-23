@@ -1,9 +1,9 @@
 ---
-name: remarkable-leesgids
-description: Maakt van tekst of markdown een rustige leesgids-PDF die goed leest op een reMarkable (cover, inhoud, hoofdstukken, bronnen). Gebruik bij "maak een leesgids van ...", "maak hier een pdf van voor mijn reMarkable", of als je een rapport, onderzoek of gids op de reMarkable wilt lezen. Daarna eventueel sturen met de skill remarkable-sturen.
+name: remarkable-briefing
+description: Maakt van tekst of markdown een rustige briefing-PDF die goed leest op een reMarkable (cover, inhoud, hoofdstukken, bronnen). Gebruik bij "maak een briefing van ...", "stuur als briefing naar mijn reMarkable", "maak hier een pdf van voor mijn reMarkable", of als je een rapport, onderzoek of gids op de reMarkable wilt lezen. Daarna eventueel sturen met de skill remarkable-sturen.
 ---
 
-# Leesgids voor je reMarkable
+# Briefing voor je reMarkable
 
 Deze skill maakt van markdown een PDF in een vaste, rustige leesstijl. Het formaat past op het reMarkable-scherm.
 
@@ -17,7 +17,7 @@ Deze skill maakt van markdown een PDF in een vaste, rustige leesstijl. Het forma
 
 ## Opbouw van een gids
 
-1. **Cover** met kicker "Leesgids voor {naam}", titel, ondertitel, datum en een kader "Zo lees je deze gids".
+1. **Cover** met kicker "Briefing voor {naam}", titel, ondertitel, datum en een kader "Zo lees je deze gids".
 2. **Inhoud** met paginanummers en een kader "De kern in vijf zinnen".
 3. **Hoofdstukken** met `## 1. Titel`, elk op een nieuwe pagina.
 4. **Bronnen** als laatste pagina.

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Gebruik: render.sh <bron.md> <uit.pdf>
-# Bouwt de leesgids in twee rondes: eerst zonder paginanummers, dan met de
+# Bouwt de briefing in twee rondes: eerst zonder paginanummers, dan met de
 # echte pagina's van elk "## N." hoofdstuk op {p1}..{p14} (en {pb} voor Bronnen).
 # Gebruikt headless Chrome, Brave of Chromium (--headless=new --mute-audio).
 set -euo pipefail

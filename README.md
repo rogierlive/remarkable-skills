@@ -3,9 +3,9 @@
 Vier skills voor Claude Code waarmee je je reMarkable slimmer gebruikt. Je zegt wat je wilt, Claude regelt de rest.
 
 - **remarkable-sturen**: stuur een PDF naar je reMarkable.
-- **remarkable-leesgids**: maak van tekst een rustige leesgids-PDF in het formaat van je scherm.
+- **remarkable-briefing**: maak van tekst een rustige briefing-PDF in het formaat van je scherm.
 - **nieuwsbrief-naar-remarkable**: zet een nieuwsbrief of artikel (link of tekst) op je reMarkable.
-- **weekplanner**: een simpele weekplanner met je agenda per uur en je 3 weekdoelen.
+- **weekplanner**: een weekplanner van 14 pagina's met voorpagina, weekoverzicht, dagpagina's met je agenda per uur, notitiepagina's en weekreview, en je 3 weekdoelen.
 
 ## Voor wie is dit?
 
@@ -15,13 +15,16 @@ Het werkt op een Mac en op Linux. Windows ondersteunen de skills niet.
 
 ## Zo ziet het eruit
 
-Leesgids:
+Briefing (blader door de pagina's):
 
-![Voorbeeld van een leesgids](docs/voorbeeld-leesgids.png)
+![Briefing, cover](docs/briefing-1.png) ![Briefing, inhoud](docs/briefing-2.png)
+![Briefing, hoofdstuk met citaat en tabel](docs/briefing-3.png) ![Briefing, hoofdstuk met tabel en noot](docs/briefing-4.png)
+![Briefing, hoofdstuk met rekenvoorbeeld](docs/briefing-5.png)
 
-Weekplanner (weekoverzicht en een dagpagina):
+Weekplanner (voorpagina, weekoverzicht, dagpagina en notitiepagina):
 
-![Voorbeeld van de weekplanner](docs/voorbeeld-weekplanner.png)
+![Weekplanner, voorpagina](docs/planner-cover.png) ![Weekplanner, week](docs/planner-week.png)
+![Weekplanner, dagpagina](docs/planner-dag.png) ![Weekplanner, notitiepagina](docs/planner-journal.png)
 
 Complete voorbeeld-PDF's staan in de map `examples/`.
 
@@ -36,7 +39,7 @@ Volg de uitleg op https://docs.claude.com/en/docs/claude-code/overview en log in
 ### Stap 2. Installeer Python 3 en de hulpprogramma's
 
 1. Controleer Python: typ `python3 --version`. Zie je een nummer vanaf 3.9? Dan is het goed. Anders installeer je Python van https://www.python.org/downloads/.
-2. Installeer poppler. Dit heb je nodig voor de paginanummers in de leesgids. Op een Mac met Homebrew (https://brew.sh): `brew install poppler`. Op Linux: `sudo apt install poppler-utils`.
+2. Installeer poppler. Dit heb je nodig voor de paginanummers in de briefing. Op een Mac met Homebrew (https://brew.sh): `brew install poppler`. Op Linux: `sudo apt install poppler-utils`.
 3. Je hebt een browser nodig: Google Chrome, Brave of Chromium. Een van die drie is genoeg. Je ziet hem niet openen. De skills gebruiken hem op de achtergrond om PDF's te maken, zonder geluid en zonder JavaScript.
 
 ### Stap 3. Download deze repo
@@ -94,8 +97,8 @@ open -e ~/.remarkable-skills.env
 
 (Op Linux: open het bestand met je eigen teksteditor.) Vul in:
 
-- `REMARKABLE_NAAM`: je naam, voor op de cover van je leesgidsen.
-- `REMARKABLE_MAP`: de map op je reMarkable waar de bestanden in komen, bijvoorbeeld `/Leesgidsen`.
+- `REMARKABLE_NAAM`: je naam, voor op de cover van je briefings.
+- `REMARKABLE_MAP`: de map op je reMarkable waar de bestanden in komen, bijvoorbeeld `/Briefings`.
 - Voor de weekplanner: `WEEKPLANNER_ICAL_URL` en `WEEKPLANNER_DOELEN`. Hoe je het iCal-adres vindt, staat in `skills/weekplanner/SKILL.md`.
 
 Aanhalingstekens zijn niet nodig. Een regel ziet er zo uit: `REMARKABLE_NAAM=Kim de Vries`.
@@ -126,8 +129,8 @@ Typ gewoon wat je wilt in Claude Code.
 | Je zegt | Wat er gebeurt |
 |---|---|
 | "Stuur dit naar mijn reMarkable" (met een PDF) | De PDF komt in je reMarkable Cloud |
-| "Maak een leesgids van notities.md" | Claude maakt een PDF in leesgids-stijl |
-| "Maak een leesgids van https://... en zet hem op mijn reMarkable" | Link wordt een leesgids en gaat naar je tablet |
+| "Maak een briefing van notities.md" | Claude maakt een PDF in briefing-stijl |
+| "Maak een briefing van https://... en zet hem op mijn reMarkable" | Link wordt een briefing en gaat naar je tablet |
 | "Maak mijn weekplanner" | Claude vraagt om je 3 weekdoelen en maakt de PDF |
 | "Maak mijn weekplanner voor volgende week en stuur hem naar mijn reMarkable" | PDF wordt gemaakt en verstuurd |
 
@@ -141,10 +144,10 @@ Maak een voorbeeld-weekplanner met de demo-agenda:
 bash skills/weekplanner/maak.sh --ics examples/demo-agenda.ics --week-start 2026-11-30 --doelen "Een|Twee|Drie" -o mijn-test.pdf
 ```
 
-Maak een voorbeeld-leesgids:
+Maak een voorbeeld-briefing:
 
 ```bash
-bash skills/remarkable-leesgids/assets/render.sh skills/remarkable-leesgids/assets/voorbeeld.md mijn-gids.pdf
+bash skills/remarkable-briefing/assets/render.sh skills/remarkable-briefing/assets/voorbeeld.md mijn-gids.pdf
 ```
 
 Testen of het sturen werkt, zonder echt te uploaden:
@@ -155,14 +158,14 @@ bash skills/remarkable-sturen/sturen.sh --dry-run mijn-gids.pdf
 
 Open de PDF's om ze te bekijken: `open mijn-test.pdf mijn-gids.pdf`.
 
-Wil je zien dat een kwaadaardige webpagina niets kan doen in je leesgids? Draai dan `bash tests/test_veiligheid.sh`.
+Wil je zien dat een kwaadaardige webpagina niets kan doen in je briefing? Draai dan `bash tests/test_veiligheid.sh`.
 
 ## Privacy
 
 - Alles draait op je eigen computer. Er is geen server van mij.
 - De sleutel van je reMarkable (door `rmapi` aangemaakt) blijft in je eigen thuismap. Deze repo bevat hem niet en leest hem niet.
 - Je geheime agenda-adres staat alleen in je eigen `~/.remarkable-skills.env`, buiten deze map. De skills tonen het adres nooit, ook niet in een foutmelding.
-- Tekst van een webpagina wordt platte tekst. Scripts, iframes, afbeeldingen en links van die pagina komen niet in je leesgids. De browser maakt de PDF zonder JavaScript.
+- Tekst van een webpagina wordt platte tekst. Scripts, iframes, afbeeldingen en links van die pagina komen niet in je briefing. De browser maakt de PDF zonder JavaScript.
 - Bij een link of artikel haalt je computer de pagina zelf op. De tekst gaat daarna wel langs Claude, want Claude werkt ermee. Plak geen vertrouwelijke tekst als je dat niet wilt.
 
 ## Als iets niet werkt
@@ -181,8 +184,9 @@ Wil je zien dat een kwaadaardige webpagina niets kan doen in je leesgids? Draai 
 De skills zijn bewust simpel. Meer kan, op aanvraag:
 
 - quotes op de dagpagina's van je weekplanner;
-- een klantenteller of andere cijfers (KPI's) op je weekpagina;
-- eigen covers met je eigen foto of huisstijl;
+- een klantenteller, jaardoel-bolletjes of andere cijfers (KPI's) op je weekpagina;
+- koppeling met je takenlijst of CRM op de dagpagina;
+- een eigen cover in je huisstijl (een eigen afbeelding kun je zelf al meegeven);
 - automatisch elke vrijdag een verse weekplanner op je reMarkable, via een geplande taak;
 - een koppeling met je mailbox, zodat je nieuwsbrieven vanzelf op je reMarkable komen.
 
@@ -193,7 +197,7 @@ Wil je dit ook? Stuur Rogier een appje via rogier.live.
 ```
 skills/
   remarkable-sturen/            sturen.sh, SKILL.md
-  remarkable-leesgids/          SKILL.md, assets/build.py, assets/render.sh, assets/voorbeeld.md
+  remarkable-briefing/          SKILL.md, assets/build.py, assets/render.sh, assets/voorbeeld.md
   nieuwsbrief-naar-remarkable/  SKILL.md, nieuwsbrief.sh, artikel_naar_md.py
   weekplanner/                  SKILL.md, weekplanner.py, maak.sh
 examples/                       demo-agenda.ics en voorbeeld-PDF's

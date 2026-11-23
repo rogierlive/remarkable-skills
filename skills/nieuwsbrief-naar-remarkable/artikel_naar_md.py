@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zet een artikel of nieuwsbrief om naar een leesgids in markdown.
+"""Zet een artikel of nieuwsbrief om naar een briefing in markdown.
 
 Gebruik:
   artikel_naar_md.py <url | bestand.html | bestand.txt | -> uit.md [--titel "..."]
@@ -25,7 +25,7 @@ def haal_op(bron):
     if bron == "-":
         return sys.stdin.read(), ""
     if re.match(r"^https?://", bron):
-        req = urllib.request.Request(bron, headers={"User-Agent": "Mozilla/5.0 (leesgids)"})
+        req = urllib.request.Request(bron, headers={"User-Agent": "Mozilla/5.0 (briefing)"})
         with urllib.request.urlopen(req, timeout=30) as r:
             data = r.read()
             enc = r.headers.get_content_charset() or "utf-8"
@@ -45,7 +45,7 @@ def veilig(t):
     """Tekst van buiten (een webpagina, een mail) is onbetrouwbaar. Maak er platte
     tekst van: HTML-tekens worden &lt; &gt; &amp; en markdown-tekens krijgen een
     backslash. Zo kan een pagina geen script, iframe, afbeelding of link in je
-    leesgids smokkelen."""
+    briefing smokkelen."""
     return _MD_TEKENS.sub(r"\\\1", html.escape(t, quote=True))
 
 
@@ -123,7 +123,7 @@ def main():
     titel_fm = titel.replace('"', "'")  # build.py escapet de titel zelf voor HTML
     titel_html = html.escape(titel, quote=True)  # binnen een HTML-blok: alleen HTML-escape
     md = [f'---\ntitel: "{titel_fm}"\ndatum: {nu.isoformat()}\n---\n']
-    md.append('<div class="cover" markdown="1">\n\n<div class="kicker">Leesgids voor {naam}</div>\n')
+    md.append('<div class="cover" markdown="1">\n\n<div class="kicker">Briefing voor {naam}</div>\n')
     md.append(f'<div class="title">{titel_html}</div>\n')
     md.append(f'<div class="sub">Bron: {html.escape(bron_regel)}</div>\n')
     md.append(f'<div class="date">{datum_nl}</div>\n')

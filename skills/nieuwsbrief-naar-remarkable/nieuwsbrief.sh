@@ -1,10 +1,10 @@
 #!/bin/bash
 # Gebruik: nieuwsbrief.sh [--sturen] <url | bestand | -> [uit.pdf]
-# Maakt van een artikel of nieuwsbrief een leesgids-PDF. Met --sturen gaat hij
+# Maakt van een artikel of nieuwsbrief een briefing-PDF. Met --sturen gaat hij
 # daarna naar je reMarkable. Een "-" leest geplakte tekst uit stdin.
 set -euo pipefail
 HIER="$(cd "$(dirname "$0")" && pwd)"
-LEES="$HIER/../remarkable-leesgids/assets"
+LEES="$HIER/../remarkable-briefing/assets"
 STUUR="$HIER/../remarkable-sturen/sturen.sh"
 # shellcheck disable=SC1091
 . "$LEES/laadenv.sh"

@@ -1,4 +1,4 @@
-"""Zet een leesgids in markdown om naar HTML. Gebruik: build.py bron.md uit.html [paginas-json]"""
+"""Zet een briefing in markdown om naar HTML. Gebruik: build.py bron.md uit.html [paginas-json]"""
 import html as htmllib, os, re, sys, json, markdown, pathlib
 
 src = pathlib.Path(sys.argv[1]).read_text()
@@ -6,7 +6,7 @@ out = pathlib.Path(sys.argv[2])
 pages = json.loads(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] else {}
 
 m = re.match(r"^---\n(.*?)\n---\n", src, flags=re.S)
-title = "Leesgids"
+title = "Briefing"
 if m:
     t = re.search(r"^titel:\s*(.+)$", m.group(1), flags=re.M)
     if t: title = t.group(1).strip().strip('"')
