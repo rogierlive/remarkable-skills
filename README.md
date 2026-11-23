@@ -9,43 +9,65 @@ Skills voor Claude Code waarmee je je reMarkable slimmer gebruikt. Je zegt wat j
 
 ## Weekplanner voor je reMarkable
 
-Je agenda zit in je telefoon, je focus op papier. Dit hoofdstuk lost dat op: elke week krijg je een planner van 14 pagina's met je echte agenda, je 3 weekdoelen, dagpagina's met timebox-kader, notitiepagina's en een weekreview. Je begint de week met overzicht en focus.
+Je agenda zit in je telefoon, je focus op papier. Dit hoofdstuk lost dat op: elke week krijg je een planner van 12 pagina's met je echte agenda en je weekdoelen. Per werkdag een dagpagina (agenda per uur met timebox-kader, vier prioriteiten, notities) en een kort dagboek (ochtend: waar ben je dankbaar voor, avond: drie mooie dingen). Het weekend krijgt een eigen dagboekpagina. Je begint de week met overzicht en focus.
 
 Skill: **weekplanner**. Hij gebruikt ook `remarkable-sturen`, om de planner op je tablet te zetten.
 
-![Weekplanner, voorpagina](docs/planner-cover.png) ![Weekplanner, week](docs/planner-week.png)
-![Weekplanner, dagpagina](docs/planner-dag.png) ![Weekplanner, notitiepagina](docs/planner-journal.png)
+![Weekplanner, dagpagina en dagboek](docs/planner-hero.png)
+
+![Weekplanner, voorpagina](docs/planner-cover.png)
+
+![Weekplanner, dagpagina](docs/planner-dag.png) ![Weekplanner, dagboek](docs/planner-journal.png) ![Weekplanner, weekend](docs/planner-weekend.png)
 
 Zo gebruik je het (na de [installatie](#installatie-stap-voor-stap)):
 
 | Je zegt | Wat er gebeurt |
 |---|---|
-| "Maak mijn weekplanner" | Claude vraagt om je 3 weekdoelen en maakt de PDF |
+| "Maak mijn weekplanner" | Claude vraagt om je weekdoelen en maakt de PDF |
 | "Maak mijn weekplanner voor volgende week en stuur hem naar mijn reMarkable" | PDF wordt gemaakt en verstuurd |
 
-Je hebt een iCal-adres van je agenda nodig. Hoe je dat vindt, staat in `skills/weekplanner/SKILL.md`. Een voorbeeld-PDF staat in `examples/voorbeeld-weekplanner.pdf`.
+Je agenda komt uit Google Agenda of Outlook, via een iCal/ICS-link. Een `.ics`-bestand kan ook. Hoe je de link vindt, staat in `skills/weekplanner/SKILL.md`. De planner is standaard liggend, staand kan ook. Een voorbeeld-PDF staat in `examples/voorbeeld-weekplanner.pdf`.
 
 <a id="briefings"></a>
 
 ## Slimme briefings voor je reMarkable
 
-Rapporten, nieuwsbrieven en analyses lees je op je laptop zelden echt. Ze blijven liggen. Dit hoofdstuk zet ze als rustige briefing op je reMarkable: inhoud, kernpunten en ruimte voor je pen. Je leest wat ertoe doet, met de pen in de hand.
+Rapporten, nieuwsbrieven en analyses lees je op je laptop zelden echt. Ze blijven liggen. Dit hoofdstuk zet ze als rustige briefing op je reMarkable: inhoud, kernpunten en ruimte voor je pen. Je leest wat ertoe doet, met de pen in de hand. En daarna haalt Claude je aantekeningen weer op en verwerkt ze.
 
-Skills: **remarkable-briefing** (tekst naar briefing-PDF in het formaat van je scherm), **nieuwsbrief-naar-remarkable** (een nieuwsbrief of artikel, via link of tekst, naar je tablet) en **remarkable-sturen** (een PDF naar je reMarkable Cloud).
+Skills: **remarkable-briefing** (tekst naar briefing-PDF in het formaat van je scherm), **nieuwsbrief-naar-remarkable** (een nieuwsbrief of artikel, via link of tekst, naar je tablet), **remarkable-sturen** (een PDF naar je reMarkable Cloud) en **remarkable-ophalen** (een document met je aantekeningen terughalen).
+
+![Briefing met aantekeningen](docs/briefing-hero.png)
+
+### Zo werkt het, in 3 stappen
+
+**1. Sturen.** Je zegt tegen Claude:
+
+> Zet deze complete analyse als briefing op mijn reMarkable, dan lees ik hem straks na.
+
+Claude maakt een rustige briefing-PDF en zet hem op je tablet.
+
+**2. Lezen en schrijven.** Je leest op je reMarkable. Je onderstreept, omcirkelt en schrijft je commentaar in de kantlijn.
+
+**3. Ophalen en verwerken.** Later zeg je:
+
+> Ik heb hem nagelezen en comments gezet, haal ze op en verwerk ze.
+
+Claude haalt het document met je aantekeningen op, maakt van elke pagina een afbeelding en leest je handschrift. Je krijgt eerst een lijstje van wat er staat. Daarna verwerkt Claude de punten.
 
 ![Briefing, cover](docs/briefing-1.png) ![Briefing, inhoud](docs/briefing-2.png)
 ![Briefing, hoofdstuk met citaat en tabel](docs/briefing-3.png) ![Briefing, hoofdstuk met tabel en doelen](docs/briefing-4.png)
 ![Briefing, hoofdstuk met rekenvoorbeeld](docs/briefing-5.png)
 
-Zo gebruik je het (na de [installatie](#installatie-stap-voor-stap)):
+Meer dingen die je kunt zeggen (na de [installatie](#installatie-stap-voor-stap)):
 
 | Je zegt | Wat er gebeurt |
 |---|---|
 | "Stuur dit naar mijn reMarkable" (met een PDF) | De PDF komt in je reMarkable Cloud |
 | "Maak een briefing van notities.md" | Claude maakt een PDF in briefing-stijl |
 | "Maak een briefing van https://... en zet hem op mijn reMarkable" | Link wordt een briefing en gaat naar je tablet |
+| "Haal mijn aantekeningen van de briefing op" | Claude haalt het document terug en leest je handschrift |
 
-Na het sturen synchroniseert je tablet binnen een paar minuten. Wil je het meteen? Tik op je reMarkable op het sync-icoon.
+Na het sturen synchroniseert je tablet binnen een paar minuten. Wil je het meteen? Tik op je reMarkable op het sync-icoon. Doe dat ook voordat Claude je aantekeningen ophaalt.
 
 Een complete voorbeeld-PDF staat in `examples/voorbeeld-briefing.pdf`.
 
@@ -126,7 +148,7 @@ open -e ~/.remarkable-skills.env
 
 - `REMARKABLE_NAAM`: je naam, voor op de cover van je briefings.
 - `REMARKABLE_MAP`: de map op je reMarkable waar de bestanden in komen, bijvoorbeeld `/Briefings`.
-- Voor de weekplanner: `WEEKPLANNER_ICAL_URL` en `WEEKPLANNER_DOELEN`. Hoe je het iCal-adres vindt, staat in `skills/weekplanner/SKILL.md`.
+- Voor de weekplanner: `WEEKPLANNER_ICAL_URL` (Google Agenda of Outlook) en `WEEKPLANNER_DOELEN`. Hoe je de link vindt, staat in `skills/weekplanner/SKILL.md`.
 
 Aanhalingstekens zijn niet nodig. Een regel ziet er zo uit: `REMARKABLE_NAAM=Kim de Vries`.
 
@@ -145,7 +167,7 @@ cp -R skills/* ~/.claude/skills/
 
 Of alleen voor een bepaald project: kopieer ze naar `.claude/skills/` in die projectmap.
 
-Belangrijk: zet alle vier de skills bij elkaar. De skills `nieuwsbrief-naar-remarkable` en `weekplanner` gebruiken de andere twee.
+Belangrijk: zet alle vijf de skills bij elkaar. Ze gebruiken elkaars hulpbestanden.
 
 Start Claude Code opnieuw (`claude`). Klaar.
 
@@ -169,6 +191,12 @@ Testen of het sturen werkt, zonder echt te uploaden:
 bash skills/remarkable-sturen/sturen.sh --dry-run mijn-gids.pdf
 ```
 
+Testen hoe ophalen werkt, zonder iets op te halen:
+
+```bash
+bash skills/remarkable-ophalen/ophalen.sh --dry-run "/Briefings/Mijn briefing"
+```
+
 Open de PDF's om ze te bekijken: `open mijn-test.pdf mijn-gids.pdf`.
 
 Wil je zien dat een kwaadaardige webpagina niets kan doen in je briefing? Draai dan `bash tests/test_veiligheid.sh`.
@@ -177,8 +205,9 @@ Wil je zien dat een kwaadaardige webpagina niets kan doen in je briefing? Draai 
 
 - Alles draait op je eigen computer. Er is geen server van mij.
 - De sleutel van je reMarkable (door `rmapi` aangemaakt) blijft in je eigen thuismap. Deze repo bevat hem niet en leest hem niet.
-- Je geheime agenda-adres staat alleen in je eigen `~/.remarkable-skills.env`, buiten deze map. De skills tonen het adres nooit, ook niet in een foutmelding.
+- Je geheime agenda-link staat alleen in je eigen `~/.remarkable-skills.env`, buiten deze map. De skills tonen het adres nooit, ook niet in een foutmelding.
 - Tekst van een webpagina wordt platte tekst. Scripts, iframes, afbeeldingen en links van die pagina komen niet in je briefing. De browser maakt de PDF zonder JavaScript.
+- Haal je aantekeningen op? Dan komen de pagina's als afbeeldingen in de map `uitvoer/` op je eigen computer. Claude bekijkt ze om je handschrift te lezen.
 - Bij een link of artikel haalt je computer de pagina zelf op. De tekst gaat daarna wel langs Claude, want Claude werkt ermee. Plak geen vertrouwelijke tekst als je dat niet wilt.
 
 ## Als iets niet werkt
@@ -190,6 +219,7 @@ Wil je zien dat een kwaadaardige webpagina niets kan doen in je briefing? Draai 
 | "Module ... ontbreekt" | Doe de twee `venv`-regels uit stap 3 opnieuw. |
 | "externally-managed-environment" bij `pip` | Je gebruikte `pip3` los. Gebruik de twee `venv`-regels uit stap 3. |
 | "poppler ontbreekt" | Op een Mac: `brew install poppler`. |
+| Ophalen geeft geen aantekeningen | Exporteer het document in de reMarkable-app als PDF en draai `ophalen.sh --pdf bestand.pdf`. |
 | Inlogfout bij rmapi | Draai `rmapi`, en plak een nieuwe code van my.remarkable.com. |
 
 ## Extra opties (op aanvraag)
@@ -197,7 +227,7 @@ Wil je zien dat een kwaadaardige webpagina niets kan doen in je briefing? Draai 
 De skills zijn bewust simpel. Meer kan, op aanvraag:
 
 - quotes op de dagpagina's van je weekplanner;
-- een klantenteller, jaardoel-bolletjes of andere cijfers (KPI's) op je weekpagina;
+- een klantenteller, jaardoel-bolletjes of andere cijfers (KPI's) op je dagpagina;
 - koppeling met je takenlijst of CRM op de dagpagina;
 - een eigen cover in je huisstijl (een eigen afbeelding kun je zelf al meegeven);
 - automatisch elke vrijdag een verse weekplanner op je reMarkable, via een geplande taak;
@@ -210,6 +240,7 @@ Wil je dit ook? Stuur Rogier een appje via rogier.live.
 ```
 skills/
   remarkable-sturen/            sturen.sh, SKILL.md
+  remarkable-ophalen/           ophalen.sh, SKILL.md
   remarkable-briefing/          SKILL.md, assets/build.py, assets/render.sh, assets/voorbeeld.md
   nieuwsbrief-naar-remarkable/  SKILL.md, nieuwsbrief.sh, artikel_naar_md.py
   weekplanner/                  SKILL.md, weekplanner.py, maak.sh

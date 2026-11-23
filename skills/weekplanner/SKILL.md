@@ -1,26 +1,27 @@
 ---
 name: weekplanner
-description: Maakt een weekplanner-PDF voor de reMarkable (14 pagina's): voorpagina, weekoverzicht, per dag een dagpagina met agenda per uur en een notitiepagina, plus weekreview en weekend, met 3 weekdoelen. De agenda komt uit een Google Agenda (geheim iCal-adres) of een .ics-bestand. Gebruik bij "maak mijn weekplanner", "weekplanner voor volgende week", "zet mijn week op de reMarkable".
+description: Maakt een weekplanner-PDF voor de reMarkable (12 pagina's): voorpagina, per werkdag een dagpagina (agenda per uur, weekdoelen, vier prioriteiten, notities) en een dagboekpagina (ochtend en avond), plus een weekend-dagboek. De agenda komt uit Google Agenda of Outlook (via een iCal/ICS-link) of uit een .ics-bestand. Gebruik bij "maak mijn weekplanner", "weekplanner voor volgende week", "zet mijn week op de reMarkable".
 ---
 
 # Weekplanner voor je reMarkable
 
-Een planner in 4:3 formaat (zoals het reMarkable-scherm). Veertien pagina's:
+Twaalf pagina's. De dag- en dagboekpagina's zijn extra lang: op je reMarkable scroll je er gewoon doorheen.
 
-1. **Voorpagina**: rustige cover met weeknummer, datums en (optioneel) je naam. Wil je een eigen afbeelding? Zet `WEEKPLANNER_COVER=/pad/naar/foto.jpg` of geef `--cover-image` mee.
-2. **Weekoverzicht**: je 3 weekdoelen met afvinkrondjes en alle dagen met hun afspraken.
-3. **Maandag t/m vrijdag, twee pagina's per dag**:
-   - *Dagpagina*: links je agenda per uur (05:00-23:00) met een kader om de werkdag (05:00-17:00) voor timeboxing, rechts je weekdoelen, drie prioriteiten met afvinkvakje en -rondjes, en schrijflijnen.
-   - *Notitiepagina*: ruimte voor wins en vrije notities.
-4. **Weekreview**: drie vragen met schrijfruimte.
-5. **Weekend**: een open notitiepagina voor zaterdag en zondag.
+1. **Voorpagina**: rustige cover met weeknummer en datums. Wil je een eigen afbeelding? Zet `WEEKPLANNER_COVER=/pad/naar/foto.jpg` of geef `--cover-image` mee.
+2. **Maandag t/m vrijdag, twee pagina's per dag**:
+   - *Dagpagina*: links je agenda per uur (05:00-23:00), met een kader om de werkdag (05:00-17:00) voor timeboxing. Rechts "Deze week" met je weekdoelen, vier prioriteiten met afvinkrondjes, en kladlijnen. Onderaan ruimte voor notities.
+   - *Dagboek*: OCHTEND (Ik ben dankbaar voor, Wat maakt vandaag geweldig, Daily affirmation) en AVOND (Drie mooie dingen, Learnings, vrije regels). Kort en snel in te vullen.
+3. **Weekend**: een kort dagboek voor zaterdag en zondag, met vrije regels onderaan.
 
-## Wat het wel doet
+## Liggend of staand
 
-- Leest een Google Agenda via het geheime iCal-adres, of een `.ics`-bestand.
+Standaard is de planner **liggend**: hij vult je scherm als je de reMarkable dwars houdt. Open de planner op je reMarkable en zet de weergave van het document op liggend (in het menu van het document). Liever staand? Zet `WEEKPLANNER_STAND=staand` of geef `--stand staand` mee.
+
+## Wat het doet
+
+- Leest je agenda via een iCal/ICS-link (Google Agenda of Outlook) of een `.ics`-bestand.
 - Snapt terugkerende afspraken en hele-dag-afspraken.
-- Toont 3 weekdoelen op de weekpagina en op elke dagpagina.
-- Heeft een eigen rustige cover, of jouw afbeelding.
+- Zet je weekdoelen (maximaal 3) op elke dagpagina. Geen doelen? Dan krijg je twee lege regels om zelf in te vullen.
 - Haalt emoji uit titels weg, zodat er geen lege vakjes in de PDF komen.
 
 ## Wat het niet doet (bewust simpel)
@@ -30,9 +31,9 @@ Geen quotes, geen klantenteller of jaardoel-bolletjes, geen koppeling met taken-
 ## Zo gebruik je het
 
 1. Haal de gegevens op. Vraag de gebruiker, als het niet in `~/.remarkable-skills.env` staat:
-   - **Weekdoelen**: drie doelen voor deze week. Zet ze in `WEEKPLANNER_DOELEN` (gescheiden door `|`) of geef ze mee met `--doelen`.
-   - **Agenda**: het geheime iCal-adres (`WEEKPLANNER_ICAL_URL`) of een `.ics`-bestand (`--ics`).
-2. Welke week? Standaard is dat de komende week (vanaf vrijdag) of de huidige week. Wil de gebruiker een andere week? Geef `--week-start JJJJ-MM-DD` (een maandag).
+   - **Weekdoelen**: hooguit drie doelen voor deze week. Zet ze in `WEEKPLANNER_DOELEN` (gescheiden door `|`) of geef ze mee met `--doelen`.
+   - **Agenda**: de iCal/ICS-link (`WEEKPLANNER_ICAL_URL`) of een `.ics`-bestand (`--ics`).
+2. Welke week? Standaard is dat de komende week (vanaf vrijdag) of de huidige week. Een andere week? Geef `--week-start JJJJ-MM-DD` (een maandag).
 3. Maak de PDF:
 
 ```bash
@@ -40,13 +41,15 @@ bash <pad-naar-skill>/maak.sh --doelen "Doel een|Doel twee|Doel drie"
 bash <pad-naar-skill>/maak.sh --ics "/pad/naar/agenda.ics" --week-start 2026-11-30
 ```
 
-4. Naar de reMarkable sturen? Alleen als de gebruiker dat vraagt. Voeg dan `--sturen` toe:
+4. Naar de reMarkable sturen? Alleen als de gebruiker dat vraagt. Zet dan `--sturen` vooraan:
 
 ```bash
 bash <pad-naar-skill>/maak.sh --sturen
 ```
 
-## Het geheime iCal-adres vinden (Google Agenda)
+## Je agenda-link vinden
+
+### Google Agenda
 
 1. Open Google Agenda in je browser, op een computer.
 2. Klik op het tandwiel, dan op Instellingen.
@@ -54,14 +57,30 @@ bash <pad-naar-skill>/maak.sh --sturen
 4. Scroll naar "Geheim adres in iCal-indeling" en kopieer dat adres.
 5. Plak het in `~/.remarkable-skills.env` achter `WEEKPLANNER_ICAL_URL=`.
 
-Dit adres is als een wachtwoord. Deel het niet en zet het niet in een publieke repo. Claude: toon of herhaal dit adres nooit in je antwoord, en geef het niet mee met `--ical-url` op de commandoregel. Laat het in het instellingenbestand staan.
+### Outlook (Outlook.com of Microsoft 365)
+
+1. Open Outlook in je browser (outlook.com of outlook.office.com).
+2. Klik op het tandwiel, dan op Agenda en daarna op Gedeelde agenda's.
+3. Kies bij "Een agenda publiceren" je agenda en "Kan alle details weergeven". Klik op Publiceren.
+4. Kopieer de **ICS**-link (niet de HTML-link).
+5. Plak hem in `~/.remarkable-skills.env` achter `WEEKPLANNER_ICAL_URL=`.
+
+Zie je "Een agenda publiceren" niet bij een werkaccount? Dan heeft je beheerder het uitgezet. Gebruik dan een `.ics`-bestand.
+
+### Een .ics-bestand
+
+Exporteer je agenda als `.ics` (kan in bijna elke agenda-app) en geef het mee met `--ics /pad/naar/agenda.ics`.
+
+### Geheim houden
+
+Een agenda-link is als een wachtwoord. Deel hem niet en zet hem niet in een publieke repo. Alleen links die met `https://` (of `webcal://`) beginnen werken. Claude: toon of herhaal deze link nooit in je antwoord, en geef hem niet mee met `--ical-url` op de commandoregel. Laat hem in het instellingenbestand staan.
 
 ## Extra opties (op aanvraag)
 
 Wil je meer dan dit? Dit kan allemaal op aanvraag:
 
 - quotes op de dagpagina's;
-- een klantenteller of andere cijfers (KPI's) op de weekpagina;
+- een klantenteller of andere cijfers (KPI's) op de dagpagina;
 - eigen covers, met een eigen foto of huisstijl;
 - automatisch elke vrijdag een nieuwe planner op je reMarkable, via een geplande taak.
 

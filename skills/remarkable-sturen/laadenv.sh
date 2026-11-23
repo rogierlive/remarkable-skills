@@ -15,7 +15,7 @@ _rs_laad_env() {
       v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"
       case "$k" in
         REMARKABLE_NAAM|REMARKABLE_MAP|REMARKABLE_BROWSER|REMARKABLE_PYTHON|\
-        WEEKPLANNER_ICAL_URL|WEEKPLANNER_DOELEN|WEEKPLANNER_MAP|WEEKPLANNER_TZ) ;;
+        WEEKPLANNER_ICAL_URL|WEEKPLANNER_DOELEN|WEEKPLANNER_MAP|WEEKPLANNER_TZ|WEEKPLANNER_COVER|WEEKPLANNER_STAND) ;;
         *) continue ;;
       esac
       if [ "${#v}" -ge 2 ]; then
