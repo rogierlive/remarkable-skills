@@ -1,0 +1,13 @@
+.env
+*.env
+!.env.example
+*.token
+rmapi.conf
+.rmapi
+uitvoer/
+output/
+*.pdf
+!examples/*.pdf
+.venv/
+__pycache__/
+.DS_Store

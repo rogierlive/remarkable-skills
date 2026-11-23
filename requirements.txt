@@ -1,0 +1,5 @@
+markdown
+beautifulsoup4
+reportlab
+icalendar
+recurring-ical-events
