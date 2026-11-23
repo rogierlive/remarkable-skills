@@ -49,6 +49,24 @@ Lezen duurt ongeveer 10 minuten. Pak je pen en zet een streep onder wat je metee
 
 </div>
 
+<div class="box" markdown="1">
+
+**Voor wie is dit**
+
+Voor ondernemers die hun week vaak laten bepalen door wat binnenkomt, en die meer grip willen zonder een zwaar systeem.
+
+</div>
+
+<div class="box" markdown="1">
+
+**Zo gebruik je je pen**
+
+1. Zet een streep onder wat je meteen wilt proberen.
+2. Schrijf in de kantlijn een vraag bij alles wat onduidelijk is.
+3. Omcirkel de drie dingen die je deze week gaat doen.
+
+</div>
+
 </div>
 
 <div class="pb"></div>
@@ -109,6 +127,30 @@ Kun je een doel niet afvinken? Dan is het te vaag. Maak het kleiner.
 2. Twee dagen op de bouwplaats zijn voor de oplevering.
 3. De planning van volgende week rond hebben.
 
+### Hoe kies je?
+
+Je hebt vaak meer dan drie dingen die willen. Stel jezelf drie vragen om te kiezen.
+
+| Vraag | Wat het je vertelt |
+|---|---|
+| Brengt dit geld of rust op? | Dit gaat voor op wat alleen druk geeft |
+| Moet het deze week, of kan het wachten? | Wat kan wachten, krijgt een datum |
+| Kan een ander het doen? | Geef het uit handen en schrap het |
+
+<div class="quote">Drie doelen die af zijn, zijn meer waard dan tien die half af zijn.</div>
+
+### Wat gebeurt er met de rest?
+
+De rest verdwijnt niet. Schrijf het op een aparte lijst en kijk er volgende vrijdag naar. Zo hoef je het niet in je hoofd te houden.
+
+<div class="box" markdown="1">
+
+**Probeer het nu**
+
+Pak je pen. Schrijf hieronder in je eigen woorden drie doelen voor komende week. Zet achter elk doel een dag waarop je het afrondt.
+
+</div>
+
 <div class="pb"></div>
 
 ## 3. Plan je uren
@@ -164,6 +206,30 @@ Neem op vrijdag een kwartier. Schrijf op wat goed ging, wat je leerde en wat je 
 2. Vink af wat gelukt is.
 3. Schrijf drie zinnen in de weekreview.
 4. Kies je doelen voor volgende week.
+
+### Wat doe je met wat niet lukte?
+
+Er is altijd iets dat niet af is. Vraag jezelf kort af waarom, en kies dan een van drie wegen.
+
+| Wat was er aan de hand? | Wat je doet |
+|---|---|
+| Het was te groot | Knip het in twee kleinere doelen |
+| Er kwam iets tussendoor | Zet het volgende week met een vaste dag |
+| Het was minder belangrijk dan gedacht | Schrap het zonder schuldgevoel |
+
+### Een voorbeeld van een weekreview
+
+<div class="note" markdown="1">
+Goed: de offerte is verstuurd en de oplevering liep soepel. Geleerd: ik onderschat de reistijd naar Utrecht steeds. Mee naar volgende week: de planning rond en een vast blok voor telefoon.
+</div>
+
+<div class="box" markdown="1">
+
+**Probeer het nu**
+
+Kijk terug op je afgelopen week. Schrijf drie zinnen: wat ging goed, wat leerde je en wat neem je mee. Meer is niet nodig.
+
+</div>
 
 <div class="pb"></div>
 

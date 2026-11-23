@@ -1,32 +1,57 @@
 # remarkable-skills
 
-Vier skills voor Claude Code waarmee je je reMarkable slimmer gebruikt. Je zegt wat je wilt, Claude regelt de rest.
+Skills voor Claude Code waarmee je je reMarkable slimmer gebruikt. Je zegt wat je wilt, Claude regelt de rest. Er zijn twee hoofdstukken:
 
-- **remarkable-sturen**: stuur een PDF naar je reMarkable.
-- **remarkable-briefing**: maak van tekst een rustige briefing-PDF in het formaat van je scherm.
-- **nieuwsbrief-naar-remarkable**: zet een nieuwsbrief of artikel (link of tekst) op je reMarkable.
-- **weekplanner**: een weekplanner van 14 pagina's met voorpagina, weekoverzicht, dagpagina's met je agenda per uur, notitiepagina's en weekreview, en je 3 weekdoelen.
+- [Weekplanner voor je reMarkable](#weekplanner)
+- [Slimme briefings voor je reMarkable](#briefings)
+
+## Weekplanner voor je reMarkable
+
+Je agenda zit in je telefoon, je focus op papier. Dit hoofdstuk lost dat op: elke week krijg je een planner van 14 pagina's met je echte agenda, je 3 weekdoelen, dagpagina's met timebox-kader, notitiepagina's en een weekreview. Je begint de week met overzicht en focus.
+
+Skill: **weekplanner**. Hij gebruikt ook `remarkable-sturen`, om de planner op je tablet te zetten.
+
+![Weekplanner, voorpagina](docs/planner-cover.png) ![Weekplanner, week](docs/planner-week.png)
+![Weekplanner, dagpagina](docs/planner-dag.png) ![Weekplanner, notitiepagina](docs/planner-journal.png)
+
+Zo gebruik je het (na de [installatie](#installatie-stap-voor-stap)):
+
+| Je zegt | Wat er gebeurt |
+|---|---|
+| "Maak mijn weekplanner" | Claude vraagt om je 3 weekdoelen en maakt de PDF |
+| "Maak mijn weekplanner voor volgende week en stuur hem naar mijn reMarkable" | PDF wordt gemaakt en verstuurd |
+
+Je hebt een iCal-adres van je agenda nodig. Hoe je dat vindt, staat in `skills/weekplanner/SKILL.md`. Een voorbeeld-PDF staat in `examples/voorbeeld-weekplanner.pdf`.
+
+<a id="briefings"></a>
+
+## Slimme briefings voor je reMarkable
+
+Rapporten, nieuwsbrieven en analyses lees je op je laptop zelden echt. Ze blijven liggen. Dit hoofdstuk zet ze als rustige briefing op je reMarkable: inhoud, kernpunten en ruimte voor je pen. Je leest wat ertoe doet, met de pen in de hand.
+
+Skills: **remarkable-briefing** (tekst naar briefing-PDF in het formaat van je scherm), **nieuwsbrief-naar-remarkable** (een nieuwsbrief of artikel, via link of tekst, naar je tablet) en **remarkable-sturen** (een PDF naar je reMarkable Cloud).
+
+![Briefing, cover](docs/briefing-1.png) ![Briefing, inhoud](docs/briefing-2.png)
+![Briefing, hoofdstuk met citaat en tabel](docs/briefing-3.png) ![Briefing, hoofdstuk met tabel en doelen](docs/briefing-4.png)
+![Briefing, hoofdstuk met rekenvoorbeeld](docs/briefing-5.png)
+
+Zo gebruik je het (na de [installatie](#installatie-stap-voor-stap)):
+
+| Je zegt | Wat er gebeurt |
+|---|---|
+| "Stuur dit naar mijn reMarkable" (met een PDF) | De PDF komt in je reMarkable Cloud |
+| "Maak een briefing van notities.md" | Claude maakt een PDF in briefing-stijl |
+| "Maak een briefing van https://... en zet hem op mijn reMarkable" | Link wordt een briefing en gaat naar je tablet |
+
+Na het sturen synchroniseert je tablet binnen een paar minuten. Wil je het meteen? Tik op je reMarkable op het sync-icoon.
+
+Een complete voorbeeld-PDF staat in `examples/voorbeeld-briefing.pdf`.
 
 ## Voor wie is dit?
 
 Voor ondernemers en andere lezers met een reMarkable die Claude Code gebruiken. Je hoeft niet te kunnen programmeren. Je typt alleen een paar commando's over en daarna praat je gewoon met Claude.
 
 Het werkt op een Mac en op Linux. Windows ondersteunen de skills niet.
-
-## Zo ziet het eruit
-
-Briefing (blader door de pagina's):
-
-![Briefing, cover](docs/briefing-1.png) ![Briefing, inhoud](docs/briefing-2.png)
-![Briefing, hoofdstuk met citaat en tabel](docs/briefing-3.png) ![Briefing, hoofdstuk met tabel en noot](docs/briefing-4.png)
-![Briefing, hoofdstuk met rekenvoorbeeld](docs/briefing-5.png)
-
-Weekplanner (voorpagina, weekoverzicht, dagpagina en notitiepagina):
-
-![Weekplanner, voorpagina](docs/planner-cover.png) ![Weekplanner, week](docs/planner-week.png)
-![Weekplanner, dagpagina](docs/planner-dag.png) ![Weekplanner, notitiepagina](docs/planner-journal.png)
-
-Complete voorbeeld-PDF's staan in de map `examples/`.
 
 ## Installatie, stap voor stap
 
@@ -121,20 +146,6 @@ Of alleen voor een bepaald project: kopieer ze naar `.claude/skills/` in die pro
 Belangrijk: zet alle vier de skills bij elkaar. De skills `nieuwsbrief-naar-remarkable` en `weekplanner` gebruiken de andere twee.
 
 Start Claude Code opnieuw (`claude`). Klaar.
-
-## Zo gebruik je het
-
-Typ gewoon wat je wilt in Claude Code.
-
-| Je zegt | Wat er gebeurt |
-|---|---|
-| "Stuur dit naar mijn reMarkable" (met een PDF) | De PDF komt in je reMarkable Cloud |
-| "Maak een briefing van notities.md" | Claude maakt een PDF in briefing-stijl |
-| "Maak een briefing van https://... en zet hem op mijn reMarkable" | Link wordt een briefing en gaat naar je tablet |
-| "Maak mijn weekplanner" | Claude vraagt om je 3 weekdoelen en maakt de PDF |
-| "Maak mijn weekplanner voor volgende week en stuur hem naar mijn reMarkable" | PDF wordt gemaakt en verstuurd |
-
-Na het sturen synchroniseert je tablet binnen een paar minuten. Wil je het meteen? Tik op je reMarkable op het sync-icoon.
 
 ## Proberen zonder je reMarkable
 
