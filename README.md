@@ -5,6 +5,8 @@ Skills voor Claude Code waarmee je je reMarkable slimmer gebruikt. Je zegt wat j
 - [Weekplanner voor je reMarkable](#weekplanner)
 - [Slimme briefings voor je reMarkable](#briefings)
 
+<a id="weekplanner"></a>
+
 ## Weekplanner voor je reMarkable
 
 Je agenda zit in je telefoon, je focus op papier. Dit hoofdstuk lost dat op: elke week krijg je een planner van 14 pagina's met je echte agenda, je 3 weekdoelen, dagpagina's met timebox-kader, notitiepagina's en een weekreview. Je begint de week met overzicht en focus.
